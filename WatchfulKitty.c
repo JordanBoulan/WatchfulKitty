@@ -623,7 +623,7 @@ HandleOnToLaunch(
 )
 {
 	guest_state guestContext;
-	point_hypervisor_state vpData;
+	point_cpu_state vpData; //includes hypervisor state, we pull from stack which is restored on vm-exit
 
 	//
 	// Because we had to use RCX when calling ShvOsCaptureContext, its value
@@ -635,8 +635,7 @@ HandleOnToLaunch(
 	//
 	// Get the per-VP data for this processor.
 	//
-	vpData = (VOID*)((uintptr_t)(Context + 1) - KERNEL_STACK_SIZE);
-
+	vpData = (point_cpu_state) ((uintptr_t)(Context + 1) - KERNEL_STACK_SIZE);
 	//
 	// Build a little stack context to make it easier to keep track of certain
 	// guest state, such as the RIP/RSP/RFLAGS, and the exit reason. The rest
@@ -653,7 +652,7 @@ HandleOnToLaunch(
 	//
 	// Call the generic handler
 	//
-	ShvVmxHandleExit(&guestContext);
+	VMExitHandler(&guestContext);
 
 	//
 	// Did we hit the magic exit sequence, or should we resume back to the VM
@@ -661,7 +660,7 @@ HandleOnToLaunch(
 	//
 	if (guestContext.ExitVm != FALSE)
 	{
-		//
+		/*
 		// Return the VP Data structure in RAX:RBX which is going to be part of
 		// the CPUID response that the caller (ShvVpUninitialize) expects back.
 		// Return confirmation in RCX that we are loaded
@@ -684,7 +683,8 @@ HandleOnToLaunch(
 		// correct value of the "guest" CR3, so that the currently executing
 		// process continues to run with its expected address space mappings.
 		//
-		__writecr3(ShvVmxRead(GUEST_CR3));
+		*/
+		__writecr3(ReadVMCSField(GUEST_CR3));
 
 		//
 		// Finally, restore the stack, instruction pointer and EFLAGS to the
@@ -718,7 +718,7 @@ HandleOnToLaunch(
 		// needed as RtlRestoreContext will fix all the GPRs, and what we just
 		// did to RSP will take care of the rest.
 		//
-		Context->Rip = (UINT64)ShvVmxResume;
+		Context->Rip = (UINT64) SwitchToGuestMode; //notice we aren't calling it
 	}
 
 	//
@@ -735,7 +735,7 @@ HandleOnToLaunch(
 
 /* Basic VM Exit Handler */
 // {
-EXTERN_C BOOLEAN VMExitHandler(ULONG_PTR* Registers)
+EXTERN_C BOOLEAN VMExitHandler(point_guest_state Registers)
 {
 	ULONG_PTR ExitReason = 0;
 	ULONG_PTR GuestRSP = 0;

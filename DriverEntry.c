@@ -1,7 +1,10 @@
-
-
-#include "WatchfulKitty.h"
-
+typedef struct _SHV_MTRR_RANGE
+{
+	UINT32 Enabled;
+	UINT32 Type;
+	UINT64 PhysicalAddressMin;
+	UINT64 PhysicalAddressMax;
+} SHV_MTRR_RANGE, *PSHV_MTRR_RANGE;
 
 void* __cdecl operator new(unsigned __int64 size) {
 	PHYSICAL_ADDRESS highest;

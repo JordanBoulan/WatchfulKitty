@@ -781,7 +781,7 @@ typedef struct starting_GUEST_STATE {
 	ULONG_PTR msr_bndcfgs;
 } GUEST_STATE, *PGUEST_STATE;
 
-typedef struct starting_HOST_STATE {
+typedef struct _HOST_STATE {
 	ULONG_PTR cr0;
 	ULONG_PTR cr3;
 	ULONG_PTR cr4;
@@ -803,9 +803,9 @@ typedef struct starting_HOST_STATE {
 	ULONG_PTR msr_sysenter_esp;
 	ULONG_PTR msr_sysenter_eip;
 
-} HOST_STATE, *PHOST_STATE;
+} HOST_STATE, PHOST_STATE;
 
-typedef struct MS_MTRR_RANGE //This represents physical ram slots, ranges, marked type according to MS kernel managment of mem
+typedef struct _MS_MTRR_RANGE //This represents physical ram slots, ranges, marked type according to MS kernel managment of mem
 {
 	UINT32 Enabled;
 	UINT32 Type;
@@ -828,10 +828,9 @@ typedef struct _guest_state
 	uintptr_t GuestEFlags;
 	UINT16 ExitReason;
 	UINT8 ExitVm;
-} guest_state, point_guest_data;
+} guest_state, point_guest_state;
 
-typedef struct _hypervisor_state
-{
+typedef struct _hypervisor_state {
 	UINT64 Cr0;    
 	UINT64 Cr3;   
 	UINT64 Cr4;    
@@ -848,7 +847,7 @@ typedef struct _hypervisor_state
 
 
 
-typedef struct _cpu_state
+struct _CPU_STATE
 {
 	union
 	{
@@ -874,9 +873,20 @@ typedef struct _cpu_state
 			UINT32 EptControls;
 		};
 	};
-};
+	DECLSPEC_ALIGN(PAGE_SIZE) VMX_VMCS VmxOn;
+	DECLSPEC_ALIGN(PAGE_SIZE) VMX_VMCS Vmcs;
+} cpu_state, *point_cpu_state;
 
-	
+typedef struct _SHV_MTRR_RANGE
+{
+    UINT32 Enabled;
+    UINT32 Type;
+    UINT64 PhysicalAddressMin;
+    UINT64 PhysicalAddressMax;
+} SHV_MTRR_RANGE, *PSHV_MTRR_RANGE;
+
+
+C_ASSERT(sizeof(cpu_state) == (KERNEL_STACK_SIZE));
 
 
 

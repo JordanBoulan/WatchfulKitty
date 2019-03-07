@@ -24,10 +24,10 @@
     </Inf>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DriverEntry.cpp">
+    <ClCompile Include="WatchfulKitty.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WatchfulKitty.cpp">
+    <ClCompile Include="DriverEntry.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
