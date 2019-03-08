@@ -1,3 +1,5 @@
+#include "WatchfulKitty.h"
+
 typedef struct _SHV_MTRR_RANGE
 {
 	UINT32 Enabled;
