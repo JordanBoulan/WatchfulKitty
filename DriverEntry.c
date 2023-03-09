@@ -49,8 +49,6 @@ KeSignalCallDpcSynchronize(
 );
 
 
-
-
 VOID VTLoadDpc(
 	_In_ struct _KDPC *Dpc,
 	_In_opt_ PVOID params,
@@ -78,29 +76,21 @@ VOID VTLoadDpc(
 	else {
 		DbgPrint("Failed on a processor!\n");
 	}
-
 	
-
 	return;
 }
 
 VOID VTLoad(void)
 {
 	DPC_CONTEXT ctx;
-
 	ctx.Cr3 = __readcr3();
-
 	KeGenericCallDpc(VTLoadDpc, &ctx);
 	return;
 }
 
 
-
-
-
-//expand be legit when we expand our stack so "driver-verifier" doesn't get mad, otherwise we have to low-level hack (DKOM) the windows pfn (page-frame-number) database (The windows virt mem system)
-
-
+//expand be legit when we expand our stack so "driver-verifier" doesn't get mad, 
+//otherwise we have to low-level hack (DKOM) the windows pfn (page-frame-number) database (The windows virt mem system)
 
 
 #ifdef __cplusplus
@@ -116,20 +106,7 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT pDrvObj, PUNICODE_STRING ustrRegPath)
 
 	DbgPrint("Driver Entry\n");
 
-	//SimpleVT* vt = new SimpleVT();
-	//vt->SetRootmodeCR3(__readcr3());
-	//if (vt->Install()) {
-	//	DbgPrint("install Success!\n");
-	//}
-	///else {
-	//	DbgPrint("Failed!\n");
-	//}
-
 	VTLoad();
-
-	
-
-
 
 	DbgPrint("Exit Driver Entry\n");
 
